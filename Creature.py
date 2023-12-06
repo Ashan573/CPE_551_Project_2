@@ -1,4 +1,4 @@
-# Author: Aicheng Shan
+# Author: Haitian Jiang
 # Date: 12/3/2023
 # Description: This is the Creature class inherited from FieldInhabitant class.
 

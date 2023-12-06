@@ -1,4 +1,4 @@
-# Author:Aicheng Shan
+# Author:Haitian Jiang
 # Date: 12/3/2023
 # Description: This is the Captain class which inherited from Creature class.
 
