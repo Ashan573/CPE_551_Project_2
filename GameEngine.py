@@ -130,3 +130,99 @@ class GameEngine:
                         rabbit.set_y(new_col)
                         self._field[new_row][new_col] = rabbit
                         break
+    # Method to move the Captain object vertically
+    def moveCptVertical(self, movement):
+        current_row, current_col = self._captain.get_x(), self._captain.get_y()
+        new_row = current_row + movement
+        if 0 <= new_row < len(self._field) and self._field[new_row][current_col] is None:
+            self._field[current_row][current_col] = None
+            self._captain.set_x(new_row)
+            self._field[new_row][current_col] = self._captain
+        elif 0 <= new_row < len(self._field) and isinstance(self._field[new_row][current_col], Veggie):
+            veggie = self._field[new_row][current_col]
+            self._score += veggie.get_points()
+            print(f"Yummy! A delicious {veggie.get_name()}")
+            self._captain.add_veggie(veggie)
+            self._field[current_row][current_col] = None
+            self._captain.set_x(new_row)
+            self._field[new_row][current_col] = self._captain
+        elif 0 <= new_row < len(self._field) and isinstance(self._field[new_row][current_col], Rabbit):
+            print("Don't step on the bunnies!")
+        else:
+            print("You can't move that way!")
+
+    # Method to move the Captain object horizontally
+    def moveCptHorizontal(self, movement):
+        current_row, current_col = self._captain.get_x(), self._captain.get_y()
+        new_col = current_col + movement
+        if 0 <= new_col < len(self._field[0]) and self._field[current_row][new_col] is None:
+            self._field[current_row][current_col] = None
+            self._captain.set_y(new_col)
+            self._field[current_row][new_col] = self._captain
+        elif 0 <= new_col < len(self._field[0]) and isinstance(self._field[current_row][new_col], Veggie):
+            veggie = self._field[current_row][new_col]
+            self._score += veggie.get_points()
+            print(f"Yummy! A delicious {veggie.get_name()}")
+            self._captain.add_veggie(veggie)
+            self._field[current_row][current_col] = None
+            self._captain.set_y(new_col)
+            self._field[current_row][new_col] = self._captain
+        elif 0 <= new_col < len(self._field[0]) and isinstance(self._field[current_row][new_col], Rabbit):
+            print("Don't step on the bunnies!")
+        else:
+            print("You can't move that way!")
+
+    # Method for the player to move the Captain object
+    def moveCaptain(self):
+        movement = input("Would you like to move up(W), down(S), left(A), or right(D):").upper()
+        if movement == "W":
+            self.moveCptVertical(-1)
+        elif movement == "S":
+            self.moveCptVertical(1)
+        elif movement == "A":
+            self.moveCptHorizontal(-1)
+        elif movement == "D":
+            self.moveCptHorizontal(1)
+        else:
+            print(f"{movement} is not a valid option")
+
+    # Method to inform the player that the game is over and output the score and veggies collected
+    def gameOver(self):
+        print("GAME OVER!")
+        print("You managed to harvest the following vegetables:")
+        for veggie in self._captain.get_veggies_collected():
+            print(f"{veggie.get_name()}")
+        print(f"Your score was:  {self._score}")
+
+    #  Method to update the higher score file
+    def highScore(self):
+        try:
+            # Load existing high scores from the file
+            with open(self.__HIGHSCOREFILE, 'rb') as file:
+                high_scores = pickle.load(file)
+        except FileNotFoundError:
+            high_scores = []
+
+        # Get player initials and current score
+        player_initials = input("Please enter your three initials to go on the scoreboard: ")[:3]
+        current_player = (player_initials, self._score)
+
+        # Update the high scores list with the current player's score
+        if not high_scores:
+            high_scores.append(current_player)
+        else:
+            for i, (initials, score) in enumerate(high_scores):
+                if self._score > score:
+                    high_scores.insert(i, current_player)
+                    break
+            else:
+                high_scores.append(current_player)
+
+        # Display the updated high scores
+        print("\nHIGH SCORES")
+        for i, (initials, score) in enumerate(high_scores, start=1):
+            print(f"{initials}    {score} ")
+
+        # Save the updated high scores to the higher score file
+        with open(self.__HIGHSCOREFILE, 'wb') as file:
+            pickle.dump(high_scores, file)
